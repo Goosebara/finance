@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>柯先生の財務管理</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+:root {
+  --primary-gradient: linear-gradient(135deg, #34D399, #10B981);
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  margin: 0;
+  background-color: #f7f7f7;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.banner {
+  background: var(--primary-gradient);
+  padding: 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  overflow: hidden;
+  margin-bottom: 15px;
+  box-shadow: var(--card-shadow);
+}
+
+.banner-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.banner h1 {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+.banner .back-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: var(--transition-smooth);
+}
+
+.banner .back-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.finance-tabs {
+  display: flex;
+  padding: 10px 15px;
+  gap: 10px;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.finance-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.finance-tab {
+  padding: 8px 16px;
+  border: none;
+  background: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: var(--transition-smooth);
+  min-height: 44px;
+}
+
+.finance-tab.active {
+  background: #10B981;
+  color: white;
+}
+
+.view-content {
+  display: none;
+  padding-bottom: 20px;
+}
+
+.view-content.active {
+  display: block;
+}
+
+.finance-card {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  margin: 15px;
+  box-shadow: var(--card-shadow);
+}
+
+.finance-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #10B981;
+  margin-bottom: 16px;
+}
+
+.finance-items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.finance-item {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 16px;
+  transition: var(--transition-smooth);
+}
+
+.finance-item:hover {
+  transform: translateX(5px);
+  background: #f0f1f2;
+}
+
+.service-info, .card-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.service-name, .card-name {
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.service-amount {
+  color: #10B981;
+  font-weight: 600;
+}
+
+.payment-date, .due-date {
+  font-size: 14px;
+  color: #718096;
+}
+
+.reminders-section {
+  margin-bottom: 20px;
+}
+
+.reminder-item {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 15px;
+  background: #fff;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  box-shadow: var(--card-shadow);
+  border-left: 4px solid #10B981;
+}
+
+.reminder-item.urgent {
+  border-left-color: #EF4444;
+  background: #FEF2F2;
+}
+
+.reminder-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #10B981;
+  color: white;
+  font-size: 20px;
+}
+
+.reminder-item.urgent .reminder-icon {
+  background: #EF4444;
+}
+
+.reminder-content {
+  flex: 1;
+}
+
+.reminder-title {
+  font-weight: 600;
+  margin-bottom: 4px;
+  font-size: 16px;
+}
+
+.reminder-date {
+  font-size: 14px;
+  color: #666;
+}
+
+.calendar-container {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  margin: 0 15px 20px 15px;
+  box-shadow: var(--card-shadow);
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.calendar-nav {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.calendar-month {
+  font-size: 16px;
+  font-weight: 600;
+  min-width: 120px;
+  text-align: center;
+}
+
+.calendar-nav-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: #f8f9fa;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  transition: var(--transition-smooth);
+}
+
+.calendar-nav-btn:hover {
+  background: #e9ecef;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.calendar-weekday {
+  text-align: center;
+  font-weight: 600;
+  color: #718096;
+  padding: 5px;
+  font-size: 12px;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  padding: 2px;
+  border-radius: 6px;
+  border: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.calendar-day:hover {
+  background: #f0f9f6;
+  border-color: #10B981;
+}
+
+.calendar-day.today {
+  border: 2px solid #10B981;
+  background: #F0FDF4;
+  transform: scale(1.05);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  z-index: 1;
+  position: relative;
+}
+
+.calendar-day.today .day-number {
+  color: #10B981;
+  font-weight: bold;
+}
+
+.day-number {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 2px 0;
+}
+
+.day-event {
+  font-size: 9px;
+  padding: 1px 3px;
+  border-radius: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 1px;
+}
+
+.day-event.subscription {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10B981;
+}
+
+.day-event.credit-card {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3B82F6;
+}
+
+.day-event.annual {
+  background: rgba(139, 92, 246, 0.1);
+  color: #8B5CF6;
+}
+
+.calendar-day.has-event {
+  border-color: #10B981;
+  background: #F0FDF4;
+}
+
+.calendar-day.urgent {
+  border-color: #EF4444;
+  background: #FEF2F2;
+}
+
+/* 日期詳情彈出視窗樣式 */
+.calendar-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.calendar-modal.active {
+  display: flex;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 400px;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 20px;
+  position: relative;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #666;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.modal-close:hover {
+  color: #333;
+}
+
+.event-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.event-item {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 12px;
+  border-left: 4px solid;
+}
+
+.event-item.subscription {
+  border-color: #10B981;
+}
+
+.event-item.credit-card {
+  border-color: #3B82F6;
+}
+
+.event-item.annual {
+  border-color: #8B5CF6;
+}
+
+.event-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.event-name {
+  font-weight: 500;
+  color: #2d3748;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.event-amount {
+  font-weight: 600;
+  color: #059669;
+}
+
+.event-icon {
+  font-size: 16px;
+}
+
+.event-details {
+  font-size: 14px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.no-events {
+  text-align: center;
+  padding: 20px;
+  color: #718096;
+}
+
+.tracking-btn {
+  background: var(--primary-gradient);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.tracking-btn:hover {
+  opacity: 0.9;
+}
+
+/* 密碼輸入畫面樣式 */
+.password-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.password-screen.active {
+  display: flex;
+}
+
+.password-box {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: var(--card-shadow);
+  width: 80%;
+  max-width: 320px;
+  text-align: center;
+}
+
+.password-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #2d3748;
+}
+
+.password-input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.password-button {
+  background: var(--primary-gradient);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  width: 100%;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.password-cancel {
+  background: none;
+  border: none;
+  color: #718096;
+  padding: 10px;
+  width: 100%;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.error-message {
+  color: #EF4444;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .finance-section-title {
+    font-size: 16px;
+  }
+  
+  .finance-card {
+    padding: 15px;
+    margin: 10px;
+  }
+  
+  .calendar-container {
+    padding: 10px;
+    margin: 0 10px 15px 10px;
+  }
+  
+  .calendar-day {
+    padding: 1px;
+  }
+  
+  .day-number {
+    font-size: 12px;
+  }
+  
+  .day-event {
+    font-size: 7px;
+    padding: 1px 2px;
+  }
+  
+  .reminder-item {
+    padding: 12px;
+    gap: 10px;
+  }
+  
+  .reminder-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="banner">
+  <div class="banner-content">
+    <h1>柯先生の財務管理</h1>
+    <div class="right-controls">
+      <button class="tracking-btn" onclick="showTrackingPassword()">
+        <span>📝</span>
+        <span>記帳去</span>
+      </button>
+      <button class="back-btn" onclick="goBack()">返回</button>
+    </div>
+  </div>
+</div>
+
+<div class="finance-tabs">
+  <button class="finance-tab active" onclick="switchTab('calendar')">
+    <span class="tab-icon">📅</span>
+    <span>日曆視圖</span>
+  </button>
+  <button class="finance-tab" onclick="switchTab('list')">
+    <span class="tab-icon">📋</span>
+    <span>列表視圖</span>
+  </button>
+</div>
+
+<!-- 日曆視圖 -->
+<div id="calendarView" class="view-content active">
+  <div class="reminders-section" id="remindersSection">
+    <!-- 由 JavaScript 動態生成 -->
+  </div>
+  
+  <div class="calendar-container">
+    <div class="calendar-header">
+      <div class="calendar-nav">
+        <button class="calendar-nav-btn" onclick="navigateMonth(-1)">←</button>
+        <h3 class="calendar-month" id="currentMonth">2025年5月</h3>
+        <button class="calendar-nav-btn" onclick="navigateMonth(1)">→</button>
+      </div>
+    </div>
+    <div class="calendar-grid" id="calendarGrid">
+      <!-- 由 JavaScript 動態生成 -->
+    </div>
+  </div>
+</div>
+
+<!-- 列表視圖 -->
+<div id="listView" class="view-content">
+  <div class="finance-card">
+    <h3 class="finance-section-title">
+      <span class="icon">📱</span>
+      <span>每月訂閱服務</span>
+    </h3>
+    <div class="finance-items">
+      <div class="finance-item">
+        <div class="service-info">
+          <div class="service-name">Apple 雲端</div>
+          <div class="service-amount">NT$ 90</div>
+        </div>
+        <div class="payment-date">每月 21 日</div>
+      </div>
+      <div class="finance-item">
+        <div class="service-info">
+          <div class="service-name">YouTube Premium</div>
+          <div class="service-amount">NT$ 119</div>
+        </div>
+        <div class="payment-date">每月 19 日</div>
+      </div>
+      <div class="finance-item">
+        <div class="service-info">
+          <div class="service-name">Spotify</div>
+          <div class="service-amount">NT$ 149</div>
+        </div>
+        <div class="payment-date">每月 14 日</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="finance-card">
+    <h3 class="finance-section-title">
+      <span class="icon">💳</span>
+      <span>信用卡結帳日</span>
+    </h3>
+    <div class="finance-items">
+      <div class="finance-item">
+        <div class="card-info">
+          <div class="card-name">玉山</div>
+          <div class="due-date">每月 6 日</div>
+        </div>
+      </div>
+      <div class="finance-item">
+        <div class="card-info">
+          <div class="card-name">國泰世華</div>
+          <div class="due-date">每月 10 日</div>
+        </div>
+      </div>
+      <div class="finance-item">
+        <div class="card-info">
+          <div class="card-name">聯邦</div>
+          <div class="due-date">每月 12 日</div>
+        </div>
+      </div>
+      <div class="finance-item">
+        <div class="card-info">
+          <div class="card-name">台新</div>
+          <div class="due-date">每月 17 日</div>
+        </div>
+      </div>
+      <div class="finance-item">
+        <div class="card-info">
+          <div class="card-name">永豐</div>
+          <div class="due-date">每月 19 日</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="finance-card">
+    <h3 class="finance-section-title">
+      <span class="icon">📅</span>
+      <span>年度訂閱</span>
+    </h3>
+    <div class="finance-items">
+      <div class="finance-item">
+        <div class="service-info">
+          <div class="service-name">Google One</div>
+          <div class="service-amount">NT$ 650/年</div>
+        </div>
+        <div class="payment-date">下次續約：2025/12/25</div>
+      </div>
+      <div class="finance-item">
+        <div class="service-info">
+          <div class="service-name">Netflix</div>
+          <div class="service-amount">NT$ 2,640/年</div>
+        </div>
+        <div class="payment-date">下次續約：2026/02/01</div>
+      </div>
+      <div class="finance-item">
+        <div class="service-info">
+          <div class="service-name">牙科學會費</div>
+          <div class="service-amount">NT$ 3,000/年</div>
+        </div>
+        <div class="payment-date">下次續約：2026/01/15</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 日期詳情彈出視窗 -->
+<div class="calendar-modal" id="calendarModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title" id="modalTitle">2025年5月1日</h3>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="event-list" id="modalEventList">
+      <!-- 由 JavaScript 動態生成 -->
+    </div>
+  </div>
+</div>
+
+<!-- 記帳密碼驗證 -->
+<div class="password-screen" id="passwordScreen">
+  <div class="password-box">
+    <h3 class="password-title">請輸入密碼</h3>
+    <input 
+      type="password" 
+      id="passwordInput" 
+      class="password-input" 
+      placeholder="請輸入密碼"
+      autocomplete="current-password"
+      inputmode="numeric"
+      pattern="[0-9]*"
+      maxlength="4"
+    >
+    <button class="password-button" onclick="checkPassword()">確認</button>
+    <button class="password-cancel" onclick="closePasswordScreen()">取消</button>
+    <div id="errorMessage" class="error-message"></div>
+  </div>
+</div>
+
+<script>
+// 財務資料
+const financeData = {
+  subscriptions: [
+    { name: "Apple 雲端", amount: 90, date: 21, type: "subscription" },
+    { name: "YouTube Premium", amount: 119, date: 19, type: "subscription" },
+    { name: "Spotify", amount: 149, date: 14, type: "subscription" }
+  ],
+  creditCards: [
+    { name: "玉山", date: 6, type: "credit-card" },
+    { name: "國泰世華", date: 10, type: "credit-card" },
+    { name: "聯邦", date: 12, type: "credit-card" },
+    { name: "台新", date: 17, type: "credit-card" },
+    { name: "永豐", date: 19, type: "credit-card" }
+  ],
+  annualSubscriptions: [
+    { name: "Google One", amount: 650, date: "2025-12-25", type: "annual" },
+    { name: "Netflix", amount: 2640, date: "2026-02-01", type: "annual" },
+    { name: "牙科學會費", amount: 3000, date: "2026-01-15", type: "annual" }
+  ]
+};
+
+// 當前日曆日期
+let currentCalendarDate = new Date();
+
+// 切換視圖
+function switchTab(tabId) {
+  // 隱藏所有內容
+  document.querySelectorAll('.view-content').forEach(tab => {
+    tab.classList.remove('active');
+  });
+  
+  // 重設所有標籤按鈕
+  document.querySelectorAll('.finance-tab').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  
+  // 顯示選中的內容
+  document.getElementById(tabId + 'View').classList.add('active');
+  
+  // 激活對應的標籤按鈕
+  document.querySelector(`.finance-tab[onclick*='${tabId}']`).classList.add('active');
+}
+
+// 導航到上/下個月
+function navigateMonth(direction) {
+  currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction);
+  renderCalendar();
+}
+
+// 獲取當月的天數
+function getDaysInMonth(date) {
+  return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+}
+
+// 獲取當月第一天是星期幾
+function getFirstDayOfMonth(date) {
+  return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+}
+
+// 格式化日期
+function formatMonth(date) {
+  return `${date.getFullYear()}年${date.getMonth() + 1}月`;
+}
+
+// 檢查日期是否有財務事項
+function getDateEvents(year, month, day) {
+  const events = [];
+  
+  // 月付訂閱
+  financeData.subscriptions.forEach(sub => {
+    if (sub.date === day) {
+      events.push(sub);
+    }
+  });
+  
+  // 信用卡
+  financeData.creditCards.forEach(card => {
+    if (card.date === day) {
+      events.push(card);
+    }
+  });
+  
+  // 年費
+  financeData.annualSubscriptions.forEach(annual => {
+    const eventDate = new Date(annual.date);
+    if (eventDate.getFullYear() === year && 
+        eventDate.getMonth() === month && 
+        eventDate.getDate() === day) {
+      events.push(annual);
+    }
+  });
+  
+  return events;
+}
+
+// 檢查是否需要提醒
+function isUrgent(year, month, day) {
+  const today = new Date();
+  const checkDate = new Date(year, month, day);
+  const diffDays = Math.ceil((checkDate - today) / (1000 * 60 * 60 * 24));
+  
+  return diffDays >= 0 && diffDays <= 3;
+}
+
+// 渲染日曆
+function renderCalendar() {
+  const year = currentCalendarDate.getFullYear();
+  const month = currentCalendarDate.getMonth();
+  const daysInMonth = getDaysInMonth(currentCalendarDate);
+  const firstDay = getFirstDayOfMonth(currentCalendarDate);
+  
+  // 更新月份顯示
+  document.getElementById('currentMonth').textContent = formatMonth(currentCalendarDate);
+  
+  // 生成日曆網格
+  const calendarGrid = document.getElementById('calendarGrid');
+  let gridContent = `
+    <div class="calendar-weekday">日</div>
+    <div class="calendar-weekday">一</div>
+    <div class="calendar-weekday">二</div>
+    <div class="calendar-weekday">三</div>
+    <div class="calendar-weekday">四</div>
+    <div class="calendar-weekday">五</div>
+    <div class="calendar-weekday">六</div>
+  `;
+  
+  // 添加空白天數
+  for (let i = 0; i < firstDay; i++) {
+    gridContent += `<div class="calendar-day"></div>`;
+  }
+  
+  // 添加月份天數
+  for (let day = 1; day <= daysInMonth; day++) {
+    const events = getDateEvents(year, month, day);
+    const urgent = isUrgent(year, month, day);
+    const hasEvents = events.length > 0;
+    const isToday = new Date().getDate() === day && 
+                    new Date().getMonth() === month && 
+                    new Date().getFullYear() === year;
+    
+    let dayClasses = "calendar-day";
+    if (hasEvents) dayClasses += " has-event";
+    if (urgent && hasEvents) dayClasses += " urgent";
+    if (isToday) dayClasses += " today";
+    
+    gridContent += `
+      <div class="${dayClasses}" onclick="showDateDetail(${year}, ${month}, ${day})">
+        <div class="day-number">${day}</div>
+        ${events.slice(0, 2).map(event => `
+          <div class="day-event ${event.type}">
+            ${event.type === 'credit-card' ? '💳' : 
+              event.type === 'subscription' ? '📱' : '📅'} 
+            ${event.name}
+          </div>
+        `).join('')}
+        ${events.length > 2 ? `<div class="day-event">+${events.length - 2} 更多</div>` : ''}
+      </div>
+    `;
+  }
+  
+  calendarGrid.innerHTML = gridContent;
+  
+  // 更新提醒
+  updateReminders();
+}
+
+// 顯示日期詳情
+function showDateDetail(year, month, day) {
+  const events = getDateEvents(year, month, day);
+  const modal = document.getElementById('calendarModal');
+  const title = document.getElementById('modalTitle');
+  const eventList = document.getElementById('modalEventList');
+  
+  const date = new Date(year, month, day);
+  const weekdays = ['週日', '週一', '週二', '週三', '週四', '週五', '週六'];
+  
+  title.textContent = `${year}年${month + 1}月${day}日 ${weekdays[date.getDay()]}`;
+  
+  if (events.length > 0) {
+    eventList.innerHTML = events.map(event => `
+      <div class="event-item ${event.type}">
+        <div class="event-header">
+          <div class="event-name">
+            <span class="event-icon">
+              ${event.type === 'credit-card' ? '💳' : 
+                event.type === 'subscription' ? '📱' : '📅'}
+            </span>
+            ${event.name}
+          </div>
+          ${event.amount ? `
+            <div class="event-amount">NT$ ${event.amount}</div>
+          ` : ''}
+        </div>
+        <div class="event-details">
+          ${event.type === 'credit-card' ? '信用卡帳單結帳日' :
+            event.type === 'subscription' ? '月費訂閱扣款日' : '年費扣款日'}
+        </div>
+      </div>
+    `).join('');
+  } else {
+    eventList.innerHTML = '<div class="no-events">這一天沒有財務事項</div>';
+  }
+  
+  modal.classList.add('active');
+}
+
+// 關閉模態框
+function closeModal() {
+  document.getElementById('calendarModal').classList.remove('active');
+}
+
+// 更新提醒區域
+function updateReminders() {
+  const today = new Date();
+  const remindersSection = document.getElementById('remindersSection');
+  const reminders = [];
+  
+  // 收集所有需要提醒的事項 (未來 7 天內)
+  for (let i = 0; i <= 7; i++) {
+    const checkDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
+    const events = getDateEvents(
+      checkDate.getFullYear(),
+      checkDate.getMonth(),
+      checkDate.getDate()
+    );
+    
+    events.forEach(event => {
+      const daysUntil = i;
+      const isUrgent = daysUntil <= 3;
+      
+      reminders.push({
+        event,
+        daysUntil,
+        isUrgent
+      });
+    });
+  }
+  
+  // 只顯示最近的 3 個提醒
+  const topReminders = reminders
+    .sort((a, b) => a.daysUntil - b.daysUntil)
+    .slice(0, 3);
+  
+  // 渲染提醒
+  if (topReminders.length > 0) {
+    const reminderHTML = topReminders.map(reminder => `
+      <div class="reminder-item ${reminder.isUrgent ? 'urgent' : ''}">
+        <div class="reminder-icon">
+          ${reminder.event.type === 'credit-card' ? '💳' : 
+            reminder.event.type === 'subscription' ? '📱' : '📅'}
+        </div>
+        <div class="reminder-content">
+          <div class="reminder-title">
+            ${reminder.event.name}
+            ${reminder.event.amount ? ` - NT$ ${reminder.event.amount}` : ''}
+          </div>
+          <div class="reminder-date">
+            ${reminder.daysUntil === 0 ? '今天到期' :
+              reminder.daysUntil === 1 ? '明天到期' :
+              `還有 ${reminder.daysUntil} 天`}
+          </div>
+        </div>
+      </div>
+    `).join('');
+    
+    remindersSection.innerHTML = reminderHTML;
+  } else {
+    remindersSection.innerHTML = '<div class="no-events" style="text-align: center; padding: 15px; color: #718096;">近期沒有需要提醒的事項</div>';
+  }
+}
+
+// 記帳相關功能
+function showTrackingPassword() {
+  document.getElementById('passwordScreen').classList.add('active');
+  document.getElementById('passwordInput').value = '';
+  document.getElementById('errorMessage').textContent = '';
+  document.getElementById('passwordInput').focus();
+}
+
+function closePasswordScreen() {
+  document.getElementById('passwordScreen').classList.remove('active');
+}
+
+function checkPassword() {
+  const password = document.getElementById('passwordInput').value;
+  if (password === '0915') {
+    // 密碼正確，開啟記帳工具
+    window.open('https://docs.google.com/spreadsheets/d/1ViTtirLqmS3YiK5WP0Y_DARpyQFEuYfG/edit?usp=sharing&ouid=103931640159563301638&rtpof=true&sd=true', '_blank');
+    closePasswordScreen();
+  } else {
+    document.getElementById('errorMessage').textContent = '密碼錯誤';
+    document.getElementById('passwordInput').value = '';
+  }
+}
+
+// 返回主頁
+function goBack() {
+  window.location.href = "https://goosebara.github.io/mrkd-life/";
+}
+
+// 密碼輸入框回車鍵支援
+document.getElementById('passwordInput').addEventListener('keypress', function(event) {
+  if (event.key === 'Enter') {
+    checkPassword();
+  }
+});
+
+// 點擊模態框背景關閉
+document.getElementById('calendarModal').addEventListener('click', function(event) {
+  if (event.target === this) {
+    closeModal();
+  }
+});
+
+// 點擊密碼輸入框背景關閉
+document.getElementById('passwordScreen').addEventListener('click', function(event) {
+  if (event.target === this) {
+    closePasswordScreen();
+  }
+});
+
+// 添加觸摸支援
+function addTouchSupport() {
+  // 財務項目
+  document.querySelectorAll('.finance-item').forEach(item => {
+    item.addEventListener('touchstart', function() {
+      this.classList.add('active');
+    });
+    
+    item.addEventListener('touchend', function() {
+      this.classList.remove('active');
+      setTimeout(() => {
+        this.classList.remove('active');
+      }, 150);
+    });
+  });
+  
+  // 日曆日期
+  document.querySelectorAll('.calendar-day').forEach(day => {
+    day.addEventListener('touchend', function(e) {
+      if (this.querySelector('.day-number').textContent) {
+        const year = currentCalendarDate.getFullYear();
+        const month = currentCalendarDate.getMonth();
+        const dayNum = parseInt(this.querySelector('.day-number').textContent);
+        
+        showDateDetail(year, month, dayNum);
+      }
+    });
+  });
+}
+
+// 頁面載入時初始化
+document.addEventListener('DOMContentLoaded', function() {
+  renderCalendar();
+  
+  // 觸摸支援
+  if ('ontouchstart' in window) {
+    addTouchSupport();
+  }
+  
+  // 使模態框可拖動（如需要）
+  const modalHeader = document.querySelector('.modal-header');
+  const modalContent = document.querySelector('.modal-content');
+  
+  if (modalHeader && modalContent) {
+    let isDragging = false;
+    let offsetX, offsetY;
+    
+    modalHeader.addEventListener('mousedown', function(e) {
+      isDragging = true;
+      offsetX = e.clientX - modalContent.getBoundingClientRect().left;
+      offsetY = e.clientY - modalContent.getBoundingClientRect().top;
+    });
+    
+    document.addEventListener('mousemove', function(e) {
+      if (isDragging) {
+        const x = e.clientX - offsetX;
+        const y = e.clientY - offsetY;
+        
+        modalContent.style.left = `${x}px`;
+        modalContent.style.top = `${y}px`;
+        modalContent.style.position = 'absolute';
+      }
+    });
+    
+    document.addEventListener('mouseup', function() {
+      isDragging = false;
+    });
+  }
+});
+</script>
+</body>
+</html>
+
