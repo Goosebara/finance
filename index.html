@@ -605,6 +605,81 @@ body {
     font-size: 16px;
   }
 }
+@media (max-width: 768px) {
+  .calendar-grid {
+    gap: 2px;  /* 減少日曆格子間的間距 */
+  }
+  
+  .calendar-day {
+    padding: 0;
+    border-radius: 4px;
+    min-height: 36px; /* 確保在小螢幕上有最小高度 */
+    height: auto;
+    aspect-ratio: auto; /* 移除固定的寬高比 */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+  
+  .day-number {
+    font-size: 11px;
+    padding: 1px 0;
+  }
+  
+  .day-event {
+    font-size: 6px;
+    padding: 0px 2px;
+    margin: 0;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+  
+  /* 確保日曆網格保持為網格 */
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    width: 100%;
+  }
+  
+  /* 確保標籤不會溢出 */
+  .finance-tabs {
+    padding: 8px 10px;
+    gap: 5px;
+  }
+
+  /* 改進觸摸交互 */
+  .calendar-day, .finance-tab, .reminder-item, .event-item {
+    cursor: pointer;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+  }
+  
+  .calendar-day:active, .finance-tab:active, .reminder-item:active, .event-item:active {
+    transform: scale(0.98);
+    transition: transform 0.1s;
+  }
+}
+
+/* 為非常小的設備添加更小的斷點 */
+@media (max-width: 380px) {
+  .calendar-grid {
+    gap: 1px;
+  }
+  
+  .day-number {
+    font-size: 10px;
+  }
+  
+  .day-event {
+    font-size: 5px;
+  }
+  
+  .banner h1 {
+    font-size: 1.1rem;
+  }
+}
 </style>
 </head>
 <body>
@@ -899,6 +974,9 @@ function renderCalendar() {
   const daysInMonth = getDaysInMonth(currentCalendarDate);
   const firstDay = getFirstDayOfMonth(currentCalendarDate);
   
+  // 檢查是否為行動裝置
+  const isMobile = window.innerWidth <= 768;
+  
   // 更新月份顯示
   document.getElementById('currentMonth').textContent = formatMonth(currentCalendarDate);
   
@@ -936,14 +1014,14 @@ function renderCalendar() {
     gridContent += `
       <div class="${dayClasses}" onclick="showDateDetail(${year}, ${month}, ${day})">
         <div class="day-number">${day}</div>
-        ${events.slice(0, 2).map(event => `
+        ${events.slice(0, isMobile ? 1 : 2).map(event => `
           <div class="day-event ${event.type}">
             ${event.type === 'credit-card' ? '💳' : 
               event.type === 'subscription' ? '📱' : '📅'} 
-            ${event.name}
+            ${isMobile ? '' : event.name}
           </div>
         `).join('')}
-        ${events.length > 2 ? `<div class="day-event">+${events.length - 2} 更多</div>` : ''}
+        ${events.length > (isMobile ? 1 : 2) ? `<div class="day-event">+${events.length - (isMobile ? 1 : 2)}</div>` : ''}
       </div>
     `;
   }
@@ -1139,9 +1217,58 @@ function addTouchSupport() {
   });
 }
 
+// 增強行動裝置響應性
+function enhanceMobileResponsiveness() {
+  // 根據螢幕大小調整日曆
+  function adjustForScreenSize() {
+    const isMobile = window.innerWidth <= 768;
+    const isVerySmall = window.innerWidth <= 380;
+    
+    // 調整日期事件顯示
+    document.querySelectorAll('.day-event').forEach(event => {
+      if (isMobile) {
+        event.classList.add('mobile-view');
+      } else {
+        event.classList.remove('mobile-view');
+      }
+    });
+    
+    // 調整日曆日期大小
+    document.querySelectorAll('.calendar-day').forEach(day => {
+      if (isVerySmall) {
+        day.classList.add('very-small-screen');
+      } else {
+        day.classList.remove('very-small-screen');
+      }
+    });
+  }
+  
+  // 在調整大小和加載時調用
+  window.addEventListener('resize', adjustForScreenSize);
+  adjustForScreenSize();
+  
+  // 為觸控裝置動態添加特定樣式
+  if ('ontouchstart' in window) {
+    const style = document.createElement('style');
+    style.textContent = `
+      .calendar-day, .finance-tab, .reminder-item {
+        -webkit-tap-highlight-color: rgba(0,0,0,0);
+      }
+      .calendar-day:active, .finance-tab:active, .reminder-item:active {
+        background-color: rgba(16, 185, 129, 0.1);
+      }
+    `;
+    document.head.appendChild(style);
+  }
+}
+
 // 頁面載入時初始化
 document.addEventListener('DOMContentLoaded', function() {
   renderCalendar();
+  enhanceMobileResponsiveness();
+  
+  // 添加視窗大小改變時重新渲染日曆
+  window.addEventListener('resize', renderCalendar);
   
   // 觸摸支援
   if ('ontouchstart' in window) {
@@ -1181,4 +1308,3 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </body>
 </html>
-
